@@ -3,14 +3,9 @@ import 'package:pmsn20252/utils/colors_app.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
@@ -37,8 +32,8 @@ class _ContadorPageState extends State<ContadorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Práctica 1", style: TextStyle(fontFamily: 'PriceDown', color: Color.fromARGB(255, 255, 255, 255))) ,
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        title: const Text("Práctica 1"),
+        backgroundColor: Colors.blue,
       ),
       body: Container(
         alignment: Alignment.center,
@@ -63,3 +58,5 @@ class _ContadorPageState extends State<ContadorPage> {
     );
   }
 }
+
+clase antes de ser factorizada a StatefulWidget 
