@@ -1,65 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:pmsn20252/utils/colors_app.dart';
+import 'package:pmsn20252/screens/login_screen.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ContadorPage(),
-    );
-  }
-}
-
-class ContadorPage extends StatefulWidget {
-  const ContadorPage({super.key});
-
-  @override
-  State<ContadorPage> createState() => _ContadorPageState();
-}
-
-class _ContadorPageState extends State<ContadorPage> {
-  int contador = 0;
-
-  void miEvento() {
-    print("Hola mundo");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Práctica 1", style: TextStyle(fontFamily: 'PriceDown', color: Color.fromARGB(255, 255, 255, 255))) ,
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-      ),
-      body: Container(
-        alignment: Alignment.center,
-        child: Text(
-          "Contador: $contador",
-          style: const TextStyle(
-            fontSize: 24,
-            fontFamily: 'PriceDown',
-            color: ColorsApp.txtColor,
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.ads_click),
-        onPressed: () {
-          setState(() {
-            contador++;
-          });
-          print(contador);
-        },
-      ),
+    return MaterialApp(
+      title: 'Material App',
+      home: const LoginScreen(),
     );
   }
 }
