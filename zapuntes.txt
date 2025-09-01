@@ -132,3 +132,5 @@ Cuando necesite cargar datos en segundo plano debes de usar un stafull
 por ejemplo en un login es necesario, usar un staiful por que al momento de dar clicl en autenticar
 se debe de mostrar una accion y se debe de hacer un accionn de autenticar esa accion no aparecio desde
 el principio por ende es necesario que sea un stafull
+
+
