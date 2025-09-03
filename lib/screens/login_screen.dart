@@ -72,9 +72,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20,),
                   IconButton(
                     onPressed: () {
+                      isValidating = true;
                       setState(() {
-                        isValidating = true;
+                        
                       });
+                      Future.delayed(Duration(milliseconds: 4000)).then(
+                        (value) {
+                          isValidating = false;
+                          Navigator.pushNamed(context, '/home');
+                        },
+                      );
                     },
                     icon: Icon(Icons.login, size: 40,)
                   )
