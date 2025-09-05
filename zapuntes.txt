@@ -134,3 +134,8 @@ se debe de mostrar una accion y se debe de hacer un accionn de autenticar esa ac
 el principio por ende es necesario que sea un stafull
 
 
+los pasos para un value notifier
+
+defnir la variable con su tipo dentro de la  clase  que vamos a estar monitoreandi
+definir el buidder que ava a estar monitoreando la variable para reconstruir el widget
+cambiar el valor de la variable

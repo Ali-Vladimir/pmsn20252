@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pmsn20252/utils/value_listener.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,8 +24,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 237, 207, 217),
+        actions: [
+          ValueListenableBuilder(
+            valueListenable: ValueListener.updTheme,
+            builder: (context, value, child) {
+              return IconButton(
+                icon: Icon(value ? Icons.nightlight : Icons.sunny), 
+                onPressed: () {
+                  ValueListener.updTheme.value = !ValueListener.updTheme.value;
+                },
+              );
+            },
+          ),
+        ],
       ),
-      endDrawer: Drawer(),
       body: PageView(
         controller: pageController,
         onPageChanged: (index) {
