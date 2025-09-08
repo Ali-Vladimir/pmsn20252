@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pmsn20252/models/character.dart';
 import 'package:pmsn20252/screens/login_screen.dart';
 import 'package:pmsn20252/screens/home_screen.dart';
+import 'package:pmsn20252/screens/character_details.dart';
 import 'package:pmsn20252/utils/theme_app.dart';
 import 'package:pmsn20252/utils/value_listener.dart';
 
@@ -18,8 +20,11 @@ class MyApp extends StatelessWidget {
           theme: value ? ThemeApp.lightTheme() : ThemeApp.darkTheme(),
           routes: {
             '/home': (context) => const HomeScreen(),
+            '/character-details': (context) => CharacterDetailsScreen(
+              character: ModalRoute.of(context)!.settings.arguments as Character,
+            ),
           },
-          title: 'Material App',
+          title: 'Fighter App',
           home: const LoginScreen(),
         );
       }

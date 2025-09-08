@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pmsn20252/utils/value_listener.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
+import 'package:pmsn20252/screens/characters_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,11 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex = index;
           });
         },
-        children: const [
-          Center(child: Text("Página 1 - Bookmark")),
-          Center(child: Text("Página 2 - Favoritos")),
-          Center(child: Text("Página 3 - Email")),
-          Center(child: Text("Página 4 - Carpeta")),
+        children: [
+          CharactersListScreen(),
+          Center(child: Text("Favoritos", style: Theme.of(context).textTheme.headlineMedium)),
+          Center(child: Text("Búsqueda", style: Theme.of(context).textTheme.headlineMedium)),
+          Center(child: Text("Perfil", style: Theme.of(context).textTheme.headlineMedium)),
         ],
       ),
       bottomNavigationBar: WaterDropNavBar(
