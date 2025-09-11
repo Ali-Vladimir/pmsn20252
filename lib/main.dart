@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
             ),
           },
           title: 'Fighter App',
-          home: const LoginScreen(),
+          home: LoginScreen(),
         );
       }
     );
