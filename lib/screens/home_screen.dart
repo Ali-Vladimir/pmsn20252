@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pmsn20252/utils/value_listener.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 import 'package:pmsn20252/screens/characters_list.dart';
+import 'package:pmsn20252/screens/cosmic/favorites_screen.dart';
+import 'package:pmsn20252/screens/cosmic/home_screen_cosmic.dart';
+import 'package:pmsn20252/screens/cosmic/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: [
           CharactersListScreen(),
-          Center(child: Text("Favoritos", style: Theme.of(context).textTheme.headlineMedium)),
-          Center(child: Text("Búsqueda", style: Theme.of(context).textTheme.headlineMedium)),
-          Center(child: Text("Perfil", style: Theme.of(context).textTheme.headlineMedium)),
+          FavoritesScreen(),
+          HomeScreenCosmic(),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: WaterDropNavBar(
