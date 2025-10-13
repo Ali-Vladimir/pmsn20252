@@ -6,11 +6,7 @@ class CharacterRow extends StatelessWidget {
   final Character character;
   final VoidCallback onTap;
 
-  const CharacterRow({
-    super.key,
-    required this.character,
-    required this.onTap,
-  });
+  const CharacterRow({super.key, required this.character, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +26,7 @@ class CharacterRow extends StatelessWidget {
                 alignment: FractionalOffset.center,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, 0.01)
-                  ..rotateY(0.0262), 
+                  ..rotateY(0.0262),
                 child: Container(
                   height: 190,
                   margin: EdgeInsets.symmetric(horizontal: 40),
@@ -84,11 +80,7 @@ class CharacterRow extends StatelessWidget {
                       child: AttributeWidget(
                         progress: character.speed,
                         size: 50.0,
-                        child: Icon(
-                          Icons.speed,
-                          color: Colors.white,
-                          size: 16,
-                        ),
+                        child: Icon(Icons.speed, color: Colors.white, size: 16),
                       ),
                     ),
                     SizedBox(height: 4),

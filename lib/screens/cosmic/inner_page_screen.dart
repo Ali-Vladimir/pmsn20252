@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class InnerPageScreen extends StatelessWidget {
   final String planet;
 
-  InnerPageScreen({required this.planet});
+  InnerPageScreen({super.key, required this.planet});
 
   // Mapeo de planetas a sus assets
   final Map<String, String> planetAssets = {
@@ -53,7 +53,7 @@ class InnerPageScreen extends StatelessWidget {
         'distance': '227.9',
       },
     };
-    
+
     return data[planetName] ?? data['Earth']!;
   }
 
@@ -84,7 +84,11 @@ class InnerPageScreen extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment(0.91, 0.09),
                   end: Alignment(0.10, 0.93),
-                  colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                  colors: [
+                    Color(0xFF00E5E5),
+                    Color(0xFF72A4F1),
+                    Color(0xFFE860FF),
+                  ],
                 ),
               ),
             ),
@@ -99,8 +103,17 @@ class InnerPageScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Color(0xFF091422),
                     borderRadius: BorderRadius.circular(28),
-                    border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                    boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.white.withOpacity(0.2),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 16,
+                        offset: Offset(0, -4),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -116,15 +129,27 @@ class InnerPageScreen extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment(0.91, 0.09),
                     end: Alignment(0.10, 0.93),
-                    colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                    colors: [
+                      Color(0xFF00E5E5),
+                      Color(0xFF72A4F1),
+                      Color(0xFFE860FF),
+                    ],
                   ),
                   image: DecorationImage(
                     image: AssetImage(assetPath),
                     fit: BoxFit.cover,
                   ),
                   boxShadow: [
-                    BoxShadow(color: Color(0x9909141E), blurRadius: 16, offset: Offset(0, 4)),
-                    BoxShadow(color: Color(0x26000000), blurRadius: 1, offset: Offset(0, 2)),
+                    BoxShadow(
+                      color: Color(0x9909141E),
+                      blurRadius: 16,
+                      offset: Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: Color(0x26000000),
+                      blurRadius: 1,
+                      offset: Offset(0, 2),
+                    ),
                   ],
                 ),
               ),
@@ -148,7 +173,7 @@ class InnerPageScreen extends StatelessWidget {
             Positioned(
               left: 24,
               top: 320,
-              child: Container(
+              child: SizedBox(
                 width: 327,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -157,18 +182,42 @@ class InnerPageScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatItem(Icons.scale, 'Mass\n(10²⁴ kg)', planetData['mass']!),
-                        _buildStatItem(Icons.public, 'Gravity\n(m/s²)', planetData['gravity']!),
-                        _buildStatItem(Icons.access_time, 'Day\n(hours)', planetData['day']!),
+                        _buildStatItem(
+                          Icons.scale,
+                          'Mass\n(10²⁴ kg)',
+                          planetData['mass']!,
+                        ),
+                        _buildStatItem(
+                          Icons.public,
+                          'Gravity\n(m/s²)',
+                          planetData['gravity']!,
+                        ),
+                        _buildStatItem(
+                          Icons.access_time,
+                          'Day\n(hours)',
+                          planetData['day']!,
+                        ),
                       ],
                     ),
                     SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatItem(Icons.speed, 'Esc. Velocity\n(km/s)', planetData['escVelocity']!),
-                        _buildStatItem(Icons.thermostat, 'Mean Temp\n(C)', planetData['meanTemp']!),
-                        _buildStatItem(Icons.wb_sunny, 'Distance from\nSun (10⁶ km)', planetData['distance']!),
+                        _buildStatItem(
+                          Icons.speed,
+                          'Esc. Velocity\n(km/s)',
+                          planetData['escVelocity']!,
+                        ),
+                        _buildStatItem(
+                          Icons.thermostat,
+                          'Mean Temp\n(C)',
+                          planetData['meanTemp']!,
+                        ),
+                        _buildStatItem(
+                          Icons.wb_sunny,
+                          'Distance from\nSun (10⁶ km)',
+                          planetData['distance']!,
+                        ),
                       ],
                     ),
                   ],
@@ -182,27 +231,33 @@ class InnerPageScreen extends StatelessWidget {
                 opacity: 0.8,
                 child: ElevatedButton(
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-                    elevation: 0,
-                    foregroundColor: Colors.white,
-                    shadowColor: Colors.black,
-                    surfaceTintColor: Colors.transparent,
-                    minimumSize: Size(130, 40),
-                    overlayColor: Colors.white.withOpacity(0.2),
-                    splashFactory: InkRipple.splashFactory,
-                  ).copyWith(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (states) => Color(0xFF091422),
-                    ),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                  style:
+                      ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
+                        ),
+                        elevation: 0,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.black,
+                        surfaceTintColor: Colors.transparent,
+                        minimumSize: Size(130, 40),
+                        overlayColor: Colors.white.withOpacity(0.2),
+                        splashFactory: InkRipple.splashFactory,
+                      ).copyWith(
+                        backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                          (states) => Color(0xFF091422),
+                        ),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
                   child: Container(
                     width: 130,
                     height: 40,
@@ -210,10 +265,20 @@ class InnerPageScreen extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment(0.91, 0.09),
                         end: Alignment(0.10, 0.93),
-                        colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                        colors: [
+                          Color(0xFF00E5E5),
+                          Color(0xFF72A4F1),
+                          Color(0xFFE860FF),
+                        ],
                       ),
                       borderRadius: BorderRadius.circular(28),
-                      boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 16,
+                          offset: Offset(0, -4),
+                        ),
+                      ],
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -233,7 +298,7 @@ class InnerPageScreen extends StatelessWidget {
               left: 0,
               top: 0,
               child: SafeArea(
-                child: Container(
+                child: SizedBox(
                   width: 375,
                   height: 44,
                   child: Stack(
@@ -250,7 +315,10 @@ class InnerPageScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Color(0xFF091422).withOpacity(0.7),
                               shape: BoxShape.circle,
-                              border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.white.withOpacity(0.2),
+                              ),
                             ),
                             child: Icon(
                               Icons.arrow_back_ios,
@@ -272,7 +340,7 @@ class InnerPageScreen extends StatelessWidget {
   }
 
   Widget _buildStatItem(IconData icon, String label, String value) {
-    return Container(
+    return SizedBox(
       width: 100,
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +13,9 @@ class ProfileScreen extends StatelessWidget {
           color: Color(0xFF091422),
           borderRadius: BorderRadius.circular(28),
           image: DecorationImage(
-            image: AssetImage('assets/stars.png'), // Reemplaza con tu imagen de fondo
+            image: AssetImage(
+              'assets/stars.png',
+            ), // Reemplaza con tu imagen de fondo
             fit: BoxFit.cover,
             opacity: 0.5,
           ),
@@ -26,8 +30,17 @@ class ProfileScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Color(0xFF091422).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(width: 2, color: Colors.white.withOpacity(0.2)),
-                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 16,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
                 ),
                 child: Stack(
                   children: [
@@ -69,8 +82,17 @@ class ProfileScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Color(0xFF091422).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 16,
+                                offset: Offset(0, -4),
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(12),
@@ -81,12 +103,21 @@ class ProfileScreen extends StatelessWidget {
                                   height: 50,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(width: 1.5, color: Colors.white),
+                                    border: Border.all(
+                                      width: 1.5,
+                                      color: Colors.white,
+                                    ),
                                     image: DecorationImage(
                                       image: AssetImage('assets/profile.png'),
                                       fit: BoxFit.fill,
                                     ),
-                                    boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        blurRadius: 16,
+                                        offset: Offset(0, -4),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 SizedBox(width: 8),
@@ -98,7 +129,11 @@ class ProfileScreen extends StatelessWidget {
                                     gradient: LinearGradient(
                                       begin: Alignment(0.91, 0.09),
                                       end: Alignment(0.10, 0.93),
-                                      colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                                      colors: [
+                                        Color(0xFF00E5E5),
+                                        Color(0xFF72A4F1),
+                                        Color(0xFFE860FF),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -138,8 +173,17 @@ class ProfileScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Color(0xFF091422).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 16,
+                                offset: Offset(0, -4),
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16),
@@ -155,7 +199,9 @@ class ProfileScreen extends StatelessWidget {
                                         height: 24,
                                         decoration: BoxDecoration(
                                           color: Color(0xFF11DCE8),
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                         ),
                                       ),
                                       SizedBox(width: 8),
@@ -164,9 +210,15 @@ class ProfileScreen extends StatelessWidget {
                                         height: 20,
                                         decoration: BoxDecoration(
                                           color: Color(0xFF091422),
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           boxShadow: [
-                                            BoxShadow(color: Color(0x66484D52), blurRadius: 8, offset: Offset(0, 0)),
+                                            BoxShadow(
+                                              color: Color(0x66484D52),
+                                              blurRadius: 8,
+                                              offset: Offset(0, 0),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -185,7 +237,7 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 24),
                                 Center(
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 200,
                                     height: 200,
                                     child: Stack(
@@ -201,7 +253,10 @@ class ProfileScreen extends StatelessWidget {
                                               height: 200,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                border: Border.all(width: 12, color: Colors.white),
+                                                border: Border.all(
+                                                  width: 12,
+                                                  color: Colors.white,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -212,7 +267,9 @@ class ProfileScreen extends StatelessWidget {
                                           top: 0,
                                           child: CustomPaint(
                                             size: Size(200, 200),
-                                            painter: ProgressCirclePainter(progress: 0.871),
+                                            painter: ProgressCirclePainter(
+                                              progress: 0.871,
+                                            ),
                                           ),
                                         ),
                                         // Progress Text
@@ -268,8 +325,13 @@ class ProfileScreen extends StatelessWidget {
                                         height: 24,
                                         decoration: BoxDecoration(
                                           color: Colors.black,
-                                          borderRadius: BorderRadius.circular(3),
-                                          border: Border.all(width: 1, color: Color(0xFF2F2F2F)),
+                                          borderRadius: BorderRadius.circular(
+                                            3,
+                                          ),
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Color(0xFF2F2F2F),
+                                          ),
                                         ),
                                       ),
                                       SizedBox(width: 8),
@@ -295,8 +357,13 @@ class ProfileScreen extends StatelessWidget {
                                         height: 24,
                                         decoration: BoxDecoration(
                                           color: Colors.black,
-                                          borderRadius: BorderRadius.circular(3),
-                                          border: Border.all(width: 1, color: Color(0xFF2F2F2F)),
+                                          borderRadius: BorderRadius.circular(
+                                            3,
+                                          ),
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Color(0xFF2F2F2F),
+                                          ),
                                         ),
                                       ),
                                       SizedBox(width: 8),

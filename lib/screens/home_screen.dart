@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
             valueListenable: ValueListener.updTheme,
             builder: (context, value, child) {
               return IconButton(
-                icon: Icon(value ? Icons.nightlight : Icons.sunny), 
+                icon: Icon(value ? Icons.nightlight : Icons.sunny),
                 onPressed: () {
                   ValueListener.updTheme.value = !ValueListener.updTheme.value;
                 },
@@ -57,35 +57,38 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: WaterDropNavBar(
-          backgroundColor: navigationBarColor,
-          waterDropColor: Colors.pink,
-          onItemSelected: (int index) {
-            setState(() {
-              selectedIndex = index;
-            });
-            pageController.animateToPage(selectedIndex,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeOutQuad);
-          },
-          selectedIndex: selectedIndex,
-          barItems: <BarItem>[
-            BarItem(
-              filledIcon: Icons.bookmark_rounded,
-              outlinedIcon: Icons.bookmark_border_rounded,
-            ),
-            BarItem(
-                filledIcon: Icons.favorite_rounded,
-                outlinedIcon: Icons.favorite_border_rounded),
-            BarItem(
-              filledIcon: Icons.email_rounded,
-              outlinedIcon: Icons.email_outlined,
-            ),
-            BarItem(
-              filledIcon: Icons.folder_rounded,
-              outlinedIcon: Icons.folder_outlined,
-            ),
-          ],
-        ),
+        backgroundColor: navigationBarColor,
+        waterDropColor: Colors.pink,
+        onItemSelected: (int index) {
+          setState(() {
+            selectedIndex = index;
+          });
+          pageController.animateToPage(
+            selectedIndex,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutQuad,
+          );
+        },
+        selectedIndex: selectedIndex,
+        barItems: <BarItem>[
+          BarItem(
+            filledIcon: Icons.bookmark_rounded,
+            outlinedIcon: Icons.bookmark_border_rounded,
+          ),
+          BarItem(
+            filledIcon: Icons.favorite_rounded,
+            outlinedIcon: Icons.favorite_border_rounded,
+          ),
+          BarItem(
+            filledIcon: Icons.email_rounded,
+            outlinedIcon: Icons.email_outlined,
+          ),
+          BarItem(
+            filledIcon: Icons.folder_rounded,
+            outlinedIcon: Icons.folder_outlined,
+          ),
+        ],
+      ),
     );
   }
 }

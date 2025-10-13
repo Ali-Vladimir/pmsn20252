@@ -37,8 +37,12 @@ dependencies:
   lottie: ^3.3.1
   water_drop_nav_bar: ^2.2.2
   sqflite: ^2.4.1
+  path: ^1.8.3
   path_provider: ^2.1.5
   image_picker: ^1.0.4
+  firebase_core: ^4.1.1
+  firebase_auth: ^6.1.0
+  cloud_firestore: ^6.0.2
 
 dev_dependencies:
   flutter_test:

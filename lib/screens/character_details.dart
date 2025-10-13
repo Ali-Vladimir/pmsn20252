@@ -137,7 +137,10 @@ class CharacterDetailsScreen extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 12),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 22.0,
+                vertical: 12,
+              ),
               child: Text(
                 character.description,
                 style: TextStyle(
@@ -189,17 +192,17 @@ class CharacterDetailsScreen extends StatelessWidget {
                       child: Ink(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [
-                              Color(0xFFF29758),
-                              Color(0xFFEF5D67),
-                            ],
+                            colors: [Color(0xFFF29758), Color(0xFFEF5D67)],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(80.0)),
                         ),
                         child: Container(
-                          constraints: BoxConstraints(minWidth: 88.0, minHeight: 36.0),
+                          constraints: BoxConstraints(
+                            minWidth: 88.0,
+                            minHeight: 36.0,
+                          ),
                           alignment: Alignment.center,
                           child: Text(
                             'FIGHT!',

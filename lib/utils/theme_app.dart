@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ThemeApp {
-  static ThemeData darkTheme(){
+  static ThemeData darkTheme() {
     final theme = ThemeData.dark().copyWith(
       colorScheme: ColorScheme(
         brightness: Brightness.dark,
@@ -13,12 +13,12 @@ class ThemeApp {
         onError: Colors.white,
         surface: Colors.grey[900]!,
         onSurface: Colors.white,
-      )
+      ),
     );
     return theme;
   }
-  
-  static ThemeData lightTheme(){
+
+  static ThemeData lightTheme() {
     final theme = ThemeData.light().copyWith(
       colorScheme: ColorScheme(
         brightness: Brightness.light,
@@ -30,7 +30,7 @@ class ThemeApp {
         onError: Colors.white,
         surface: Colors.grey[50]!,
         onSurface: Colors.black87,
-      )
+      ),
     );
     return theme;
   }

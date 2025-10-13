@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:pmsn20252/firebase/firebase_auth.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -14,10 +16,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+  FireAuth? fireAuth;
   File? _avatarImage;
   final ImagePicker _picker = ImagePicker();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fireAuth = FireAuth();
+  }
 
   @override
   void dispose() {
@@ -81,12 +90,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (value == null || value.isEmpty) {
       return 'El email es requerido';
     }
-    
+
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value)) {
       return 'Ingrese un email válido';
     }
-    
+
     return null;
   }
 
@@ -110,16 +119,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  void _registerUser() {
+  void _registerUser() async {
     if (_formKey.currentState!.validate()) {
-      // Aquí implementarías la lógica de registro
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Usuario registrado exitosamente'),
-          backgroundColor: Color(0xFF1E3A8A),
-        ),
-      );
-      Navigator.pop(context);
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final user = await fireAuth!.registerWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+
+        if (user != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Usuario registrado exitosamente. Verifica tu email.',
+              ),
+              backgroundColor: Color(0xFF1E3A8A),
+            ),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error al registrar usuario'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -131,10 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF1E3A8A),
-              Color(0xFF991B1B),
-            ],
+            colors: [Color(0xFF1E3A8A), Color(0xFF991B1B)],
             begin: Alignment(0.3, -1),
             end: Alignment(-0.8, 1),
           ),
@@ -173,9 +211,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       SizedBox(width: 40),
                     ],
                   ),
-                  
+
                   SizedBox(height: 40),
-                  
+
                   // Avatar Selection
                   Center(
                     child: GestureDetector(
@@ -206,9 +244,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 8),
-                  
+
                   Text(
                     'Toca para seleccionar avatar',
                     style: TextStyle(
@@ -217,9 +255,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  
+
                   SizedBox(height: 32),
-                  
+
                   // Nombre Completo
                   TextFormField(
                     controller: _nameController,
@@ -227,9 +265,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Nombre Completo',
-                      labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      labelStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                      ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -247,9 +289,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.person, color: Colors.yellow[400]),
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   // Email
                   TextFormField(
                     controller: _emailController,
@@ -258,9 +300,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      labelStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                      ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -278,9 +324,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.email, color: Colors.yellow[400]),
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
-                  
+
                   // Password
                   TextFormField(
                     controller: _passwordController,
@@ -289,9 +335,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
-                      labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                      labelStyle: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                      ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+                        borderSide: BorderSide(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -309,7 +359,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock, color: Colors.yellow[400]),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.yellow[400],
                         ),
                         onPressed: () {
@@ -320,14 +372,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 32),
-                  
+
                   // Register Button
                   SizedBox(
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _registerUser,
+                      onPressed: _isLoading ? null : _registerUser,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -337,10 +389,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Ink(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [
-                              Color(0xFFF29758),
-                              Color(0xFFEF5D67),
-                            ],
+                            colors: [Color(0xFFF29758), Color(0xFFEF5D67)],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -348,20 +397,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         child: Container(
                           alignment: Alignment.center,
-                          child: Text(
-                            'REGISTRARSE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
+                          child: _isLoading
+                              ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  'REGISTRARSE',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 20),
                 ],
               ),

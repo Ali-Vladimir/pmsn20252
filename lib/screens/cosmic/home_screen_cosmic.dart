@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pmsn20252/screens/cosmic/inner_page_screen.dart';
 
 class HomeScreenCosmic extends StatelessWidget {
-  final List<Map<String, String>> planets = [
+  final List<Map<String, String>> planets = const [
     {'name': 'Mercury', 'image': 'assets/mercury.png'},
     {'name': 'Venus', 'image': 'assets/venus.png'},
     {'name': 'Earth', 'image': 'assets/earth.png'},
   ];
+
+  const HomeScreenCosmic({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,17 @@ class HomeScreenCosmic extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Color(0xFF091422).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(28),
-                  border: Border.all(width: 2, color: Colors.white.withOpacity(0.2)),
-                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 16,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
                 ),
                 child: Stack(
                   children: [
@@ -87,21 +98,37 @@ class HomeScreenCosmic extends StatelessWidget {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: planets.length,
-                          separatorBuilder: (context, index) => SizedBox(width: 12),
+                          separatorBuilder: (context, index) =>
+                              SizedBox(width: 12),
                           itemBuilder: (context, index) {
                             final planet = planets[index];
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => InnerPageScreen(planet: planet['name']!)),
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      InnerPageScreen(planet: planet['name']!),
+                                ),
                               ),
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Color(0xCC091422),
                                   borderRadius: BorderRadius.circular(28),
-                                  border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                                  boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                                  border: Border.all(
+                                    width: 1,
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black,
+                                      blurRadius: 16,
+                                      offset: Offset(0, -4),
+                                    ),
+                                  ],
                                 ),
                                 child: Row(
                                   children: [
@@ -113,15 +140,27 @@ class HomeScreenCosmic extends StatelessWidget {
                                         gradient: LinearGradient(
                                           begin: Alignment(0.91, 0.09),
                                           end: Alignment(0.10, 0.93),
-                                          colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                                          colors: [
+                                            Color(0xFF00E5E5),
+                                            Color(0xFF72A4F1),
+                                            Color(0xFFE860FF),
+                                          ],
                                         ),
                                         image: DecorationImage(
                                           image: AssetImage(planet['image']!),
                                           fit: BoxFit.cover,
                                         ),
                                         boxShadow: [
-                                          BoxShadow(color: Color(0x9909141E), blurRadius: 16, offset: Offset(0, 4)),
-                                          BoxShadow(color: Color(0x26000000), blurRadius: 1, offset: Offset(0, 2)),
+                                          BoxShadow(
+                                            color: Color(0x9909141E),
+                                            blurRadius: 16,
+                                            offset: Offset(0, 4),
+                                          ),
+                                          BoxShadow(
+                                            color: Color(0x26000000),
+                                            blurRadius: 1,
+                                            offset: Offset(0, 2),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -149,8 +188,17 @@ class HomeScreenCosmic extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Color(0xFF091422).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 16,
+                                offset: Offset(0, -4),
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16),
@@ -178,22 +226,35 @@ class HomeScreenCosmic extends StatelessWidget {
                                         gradient: LinearGradient(
                                           begin: Alignment(0.91, 0.09),
                                           end: Alignment(0.10, 0.93),
-                                          colors: [Color(0xFF00E5E5), Color(0xFF72A4F1), Color(0xFFE860FF)],
+                                          colors: [
+                                            Color(0xFF00E5E5),
+                                            Color(0xFF72A4F1),
+                                            Color(0xFFE860FF),
+                                          ],
                                         ),
                                         image: DecorationImage(
                                           image: AssetImage('assets/mars.png'),
                                           fit: BoxFit.cover,
                                         ),
                                         boxShadow: [
-                                          BoxShadow(color: Color(0x9909141E), blurRadius: 16, offset: Offset(0, 4)),
-                                          BoxShadow(color: Color(0x26000000), blurRadius: 1, offset: Offset(0, 2)),
+                                          BoxShadow(
+                                            color: Color(0x9909141E),
+                                            blurRadius: 16,
+                                            offset: Offset(0, 4),
+                                          ),
+                                          BoxShadow(
+                                            color: Color(0x26000000),
+                                            blurRadius: 1,
+                                            offset: Offset(0, 2),
+                                          ),
                                         ],
                                       ),
                                     ),
                                     SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Mars',
@@ -218,7 +279,12 @@ class HomeScreenCosmic extends StatelessWidget {
                                           GestureDetector(
                                             onTap: () => Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => InnerPageScreen(planet: 'Mars')),
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    InnerPageScreen(
+                                                      planet: 'Mars',
+                                                    ),
+                                              ),
                                             ),
                                             child: Row(
                                               children: [
@@ -232,7 +298,11 @@ class HomeScreenCosmic extends StatelessWidget {
                                                   ),
                                                 ),
                                                 SizedBox(width: 4),
-                                                Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 16,
+                                                  color: Colors.white,
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -252,8 +322,17 @@ class HomeScreenCosmic extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Color(0xFF091422).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(28),
-                            border: Border.all(width: 1, color: Colors.white.withOpacity(0.2)),
-                            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 16, offset: Offset(0, -4))],
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black,
+                                blurRadius: 16,
+                                offset: Offset(0, -4),
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16),
