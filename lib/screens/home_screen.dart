@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pmsn20252/utils/value_listener.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 import 'package:pmsn20252/screens/characters_list.dart';
+import 'package:pmsn20252/screens/list_songs_screen.dart';
 import 'package:pmsn20252/screens/cosmic/favorites_screen.dart';
 import 'package:pmsn20252/screens/cosmic/home_screen_cosmic.dart';
-import 'package:pmsn20252/screens/cosmic/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: [
           CharactersListScreen(),
+          ListSongsScreen(),
           FavoritesScreen(),
           HomeScreenCosmic(),
-          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: WaterDropNavBar(
@@ -76,16 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
             outlinedIcon: Icons.bookmark_border_rounded,
           ),
           BarItem(
+            filledIcon: Icons.music_note,
+            outlinedIcon: Icons.music_note_outlined,
+          ),
+          BarItem(
             filledIcon: Icons.favorite_rounded,
             outlinedIcon: Icons.favorite_border_rounded,
           ),
           BarItem(
             filledIcon: Icons.email_rounded,
             outlinedIcon: Icons.email_outlined,
-          ),
-          BarItem(
-            filledIcon: Icons.folder_rounded,
-            outlinedIcon: Icons.folder_outlined,
           ),
         ],
       ),

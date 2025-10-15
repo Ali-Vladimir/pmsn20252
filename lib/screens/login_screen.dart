@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pmsn20252/firebase/firebase_auth.dart';
 import 'register_screen.dart';
 
@@ -22,6 +23,28 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     fireAuth = FireAuth();
+    _checkAuthState();
+  }
+
+  void _checkAuthState() async {
+    try {
+      // Verificar si hay un usuario autenticado
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        // Si hay un usuario, verificar si está verificado
+        if (currentUser.emailVerified) {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
+        } else {
+          // Si no está verificado, cerrar sesión
+          await FirebaseAuth.instance.signOut();
+        }
+      }
+    } catch (e) {
+      // Si hay error, cerrar sesión para limpiar el estado
+      await FirebaseAuth.instance.signOut();
+    }
   }
 
   @override
@@ -80,9 +103,33 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } catch (e) {
         if (mounted) {
+          String errorMessage = 'Error al iniciar sesión';
+          
+          if (e is FirebaseAuthException) {
+            switch (e.code) {
+              case 'invalid-credential':
+                errorMessage = 'Las credenciales son incorrectas o han expirado';
+                break;
+              case 'user-not-found':
+                errorMessage = 'No existe una cuenta con este email';
+                break;
+              case 'wrong-password':
+                errorMessage = 'Contraseña incorrecta';
+                break;
+              case 'email-not-verified':
+                errorMessage = 'Por favor verifica tu email antes de iniciar sesión';
+                break;
+              case 'too-many-requests':
+                errorMessage = 'Demasiados intentos fallidos. Intenta más tarde';
+                break;
+              default:
+                errorMessage = 'Error: ${e.message}';
+            }
+          }
+          
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: ${e.toString()}'),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
