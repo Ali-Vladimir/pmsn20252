@@ -1,17 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:pmsn20252/screens/cosmic/inner_page_screen.dart';
+import 'package:pmsn20252/database/movies_database.dart';
+import 'package:pmsn20252/models/planet_dao.dart';
+import 'package:pmsn20252/database/planets_seeder.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:pmsn20252/screens/cosmic/reservations_calendar_screen.dart';
+import 'package:pmsn20252/screens/cosmic/planets_list_screen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-class HomeScreenCosmic extends StatelessWidget {
-  final List<Map<String, String>> planets = const [
-    {'name': 'Mercury', 'image': 'assets/mercury.png'},
-    {'name': 'Venus', 'image': 'assets/venus.png'},
-    {'name': 'Earth', 'image': 'assets/earth.png'},
-  ];
-
+class HomeScreenCosmic extends StatefulWidget {
   const HomeScreenCosmic({super.key});
 
   @override
+  State<HomeScreenCosmic> createState() => _HomeScreenCosmicState();
+}
+
+class _HomeScreenCosmicState extends State<HomeScreenCosmic> {
+  final MoviesDatabase _database = MoviesDatabase();
+  List<PlanetDao> _allPlanets = [];
+  PlanetDao? _planetOfTheDay;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await PlanetsSeeder.seedPlanets(_database);
+    final planets = await _database.getAllPlanets();
+    setState(() {
+      _allPlanets = planets;
+      // Seleccionar un planeta del día (por ejemplo, Mars o el primero disponible)
+      _planetOfTheDay = planets.firstWhere(
+        (p) => p.namePlanet == 'Mars',
+        orElse: () => planets.isNotEmpty ? planets.first : PlanetDao(),
+      );
+      _isLoading = false;
+    });
+  }
+
+  ImageProvider _buildImageProvider(String imagePath) {
+    final isAsset = imagePath.startsWith('assets/');
+    
+    if (isAsset) {
+      return AssetImage(imagePath);
+    } else if (kIsWeb) {
+      return NetworkImage(imagePath);
+    } else {
+      return AssetImage('assets/earth.png');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            color: Color(0xFF091422),
+            image: DecorationImage(
+              image: AssetImage('assets/stars.png'),
+              fit: BoxFit.cover,
+              opacity: 0.5,
+            ),
+          ),
+          child: Center(
+            child: Shimmer.fromColors(
+              baseColor: Colors.white24,
+              highlightColor: Colors.white70,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.public, size: 80, color: Colors.white),
+                  SizedBox(height: 20),
+                  Text(
+                    'Loading Solar System...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -80,6 +160,22 @@ class HomeScreenCosmic extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Botón de calendario de reservaciones
+                    Positioned(
+                      right: 16,
+                      top: 32,
+                      child: IconButton(
+                        icon: Icon(Icons.calendar_month, color: Colors.cyan, size: 28),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReservationsCalendarScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -97,17 +193,61 @@ class HomeScreenCosmic extends StatelessWidget {
                         margin: EdgeInsets.only(left: 24, top: 20),
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: planets.length,
+                          itemCount: _allPlanets.take(5).length + 1,
                           separatorBuilder: (context, index) =>
                               SizedBox(width: 12),
                           itemBuilder: (context, index) {
-                            final planet = planets[index];
+                            if (index == _allPlanets.take(5).length) {
+                              // Botón "View All"
+                              return GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PlanetsListScreen(),
+                                  ),
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.cyan.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(28),
+                                    border: Border.all(
+                                      width: 2,
+                                      color: Colors.cyan,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.grid_view,
+                                        color: Colors.cyan,
+                                        size: 20,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'View All',
+                                        style: TextStyle(
+                                          color: Colors.cyan,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: 'Roboto',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                            final planet = _allPlanets[index];
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      InnerPageScreen(planet: planet['name']!),
+                                      InnerPageScreen(planetDao: planet),
                                 ),
                               ),
                               child: Container(
@@ -147,7 +287,7 @@ class HomeScreenCosmic extends StatelessWidget {
                                           ],
                                         ),
                                         image: DecorationImage(
-                                          image: AssetImage(planet['image']!),
+                                          image: _buildImageProvider(planet.imagePath ?? 'assets/earth.png'),
                                           fit: BoxFit.cover,
                                         ),
                                         boxShadow: [
@@ -166,7 +306,7 @@ class HomeScreenCosmic extends StatelessWidget {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      planet['name']!,
+                                      planet.namePlanet ?? 'Unknown',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
@@ -218,36 +358,39 @@ class HomeScreenCosmic extends StatelessWidget {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: LinearGradient(
-                                          begin: Alignment(0.91, 0.09),
-                                          end: Alignment(0.10, 0.93),
-                                          colors: [
-                                            Color(0xFF00E5E5),
-                                            Color(0xFF72A4F1),
-                                            Color(0xFFE860FF),
+                                    Hero(
+                                      tag: 'planet_${_planetOfTheDay?.idPlanet}',
+                                      child: Container(
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: LinearGradient(
+                                            begin: Alignment(0.91, 0.09),
+                                            end: Alignment(0.10, 0.93),
+                                            colors: [
+                                              Color(0xFF00E5E5),
+                                              Color(0xFF72A4F1),
+                                              Color(0xFFE860FF),
+                                            ],
+                                          ),
+                                          image: DecorationImage(
+                                            image: _buildImageProvider(_planetOfTheDay?.imagePath ?? 'assets/mars.png'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Color(0x9909141E),
+                                              blurRadius: 16,
+                                              offset: Offset(0, 4),
+                                            ),
+                                            BoxShadow(
+                                              color: Color(0x26000000),
+                                              blurRadius: 1,
+                                              offset: Offset(0, 2),
+                                            ),
                                           ],
                                         ),
-                                        image: DecorationImage(
-                                          image: AssetImage('assets/mars.png'),
-                                          fit: BoxFit.cover,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Color(0x9909141E),
-                                            blurRadius: 16,
-                                            offset: Offset(0, 4),
-                                          ),
-                                          BoxShadow(
-                                            color: Color(0x26000000),
-                                            blurRadius: 1,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
                                       ),
                                     ),
                                     SizedBox(width: 12),
@@ -257,7 +400,7 @@ class HomeScreenCosmic extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Mars',
+                                            _planetOfTheDay?.namePlanet ?? 'Mars',
                                             style: TextStyle(
                                               color: Color(0xFF11DCE8),
                                               fontSize: 16,
@@ -267,13 +410,15 @@ class HomeScreenCosmic extends StatelessWidget {
                                           ),
                                           SizedBox(height: 8),
                                           Text(
-                                            'Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, only being larger than Mercury. In the English language, Mars is named for the Roman god of war.',
+                                            _planetOfTheDay?.description ?? 'Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System.',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w400,
                                               fontFamily: 'Roboto',
                                             ),
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           SizedBox(height: 8),
                                           GestureDetector(
@@ -282,7 +427,7 @@ class HomeScreenCosmic extends StatelessWidget {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     InnerPageScreen(
-                                                      planet: 'Mars',
+                                                      planetDao: _planetOfTheDay!,
                                                     ),
                                               ),
                                             ),

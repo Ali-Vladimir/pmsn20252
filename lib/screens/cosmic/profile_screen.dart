@@ -1,10 +1,132 @@
 import 'package:flutter/material.dart';
+import 'package:pmsn20252/widgets/parallax_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show File;
+import 'package:pmsn20252/database/movies_database.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final MoviesDatabase _database = MoviesDatabase();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  String _profileImagePath = 'assets/profile.png';
+  bool _isEditing = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final profile = await _database.getProfile();
+    if (profile != null) {
+      setState(() {
+        _nameController.text = profile['name'] ?? 'Arthur Dent';
+        _bioController.text = profile['bio'] ?? 'Space adventurer';
+        _profileImagePath = profile['imagePath'] ?? 'assets/profile.png';
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _profileImagePath = image.path;
+      });
+    }
+  }
+
+  Widget _buildProfileImage() {
+    if (_profileImagePath.startsWith('assets/')) {
+      return Image.asset(
+        _profileImagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(Icons.person, size: 30, color: Colors.white);
+        },
+      );
+    } else if (kIsWeb) {
+      return Image.network(
+        _profileImagePath,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(Icons.person, size: 30, color: Colors.white);
+        },
+      );
+    } else {
+      return Image.file(
+        File(_profileImagePath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(Icons.person, size: 30, color: Colors.white);
+        },
+      );
+    }
+  }
+
+  void _toggleEdit() {
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
+  Future<void> _saveProfile() async {
+    try {
+      await _database.updateProfile(
+        _nameController.text,
+        _bioController.text,
+        _profileImagePath,
+      );
+      
+      setState(() {
+        _isEditing = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Profile updated successfully!'),
+          backgroundColor: Colors.cyan,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error saving profile: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Container(
+          color: Color(0xFF091422),
+          child: Center(
+            child: CircularProgressIndicator(color: Colors.cyan),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -61,6 +183,19 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Edit Button
+                    Positioned(
+                      right: 16,
+                      top: 70,
+                      child: IconButton(
+                        icon: Icon(
+                          _isEditing ? Icons.close : Icons.edit,
+                          color: Colors.cyan,
+                          size: 28,
+                        ),
+                        onPressed: _isEditing ? _toggleEdit : _toggleEdit,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -76,9 +211,56 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Parallax Hero Banner
+                        AnimatedParallax(
+                          imagePath: 'assets/stars.png',
+                          height: 200,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Color(0xFF091422).withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.explore,
+                                    size: 60,
+                                    color: Colors.cyan,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Space Explorer',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 10,
+                                          color: Colors.black,
+                                          offset: Offset(2, 2),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
                         // Profile Card
                         Container(
-                          height: 100,
+                          padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Color(0xFF091422).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(28),
@@ -94,77 +276,146 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 1.5,
-                                      color: Colors.white,
-                                    ),
-                                    image: DecorationImage(
-                                      image: AssetImage('assets/profile.png'),
-                                      fit: BoxFit.fill,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black,
-                                        blurRadius: 16,
-                                        offset: Offset(0, -4),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: LinearGradient(
-                                      begin: Alignment(0.91, 0.09),
-                                      end: Alignment(0.10, 0.93),
-                                      colors: [
-                                        Color(0xFF00E5E5),
-                                        Color(0xFF72A4F1),
-                                        Color(0xFFE860FF),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: _isEditing ? _pickImage : null,
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          width: 70,
+                                          height: 70,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              width: 2,
+                                              color: _isEditing ? Colors.cyan : Colors.white,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                blurRadius: 16,
+                                                offset: Offset(0, -4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipOval(
+                                            child: _buildProfileImage(),
+                                          ),
+                                        ),
+                                        if (_isEditing)
+                                          Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: Container(
+                                              padding: EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.cyan,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.camera_alt,
+                                                size: 16,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Arthur Dent',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800,
-                                        fontFamily: 'Roboto',
-                                      ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (_isEditing)
+                                          TextField(
+                                            controller: _nameController,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: 'Your name',
+                                              hintStyle: TextStyle(color: Colors.white54),
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.cyan),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.cyan, width: 2),
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          Text(
+                                            _nameController.text,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                              fontFamily: 'Roboto',
+                                            ),
+                                          ),
+                                        SizedBox(height: 8),
+                                        if (_isEditing)
+                                          TextField(
+                                            controller: _bioController,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: 'Your bio',
+                                              hintStyle: TextStyle(color: Colors.white54),
+                                              enabledBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.cyan),
+                                              ),
+                                              focusedBorder: UnderlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.cyan, width: 2),
+                                              ),
+                                            ),
+                                          )
+                                        else
+                                          Text(
+                                            _bioController.text,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                              fontFamily: 'Roboto',
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Space adventurer',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'Roboto',
-                                      ),
+                                  ),
+                                ],
+                              ),
+                              if (_isEditing) ...[
+                                SizedBox(height: 20),
+                                ElevatedButton(
+                                  onPressed: _saveProfile,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.cyan,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
-                                  ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.save),
+                                      SizedBox(width: 8),
+                                      Text('Save Profile'),
+                                    ],
+                                  ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
                         ),
                         SizedBox(height: 20),

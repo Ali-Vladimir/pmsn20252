@@ -1,66 +1,118 @@
 import 'package:flutter/material.dart';
+import 'package:pmsn20252/models/planet_dao.dart';
+import 'package:pmsn20252/database/movies_database.dart';
+import 'package:pmsn20252/widgets/flip_card.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:pmsn20252/screens/cosmic/add_reservation_screen.dart';
+import 'package:pmsn20252/screens/cosmic/add_planet_screen.dart';
 
-class InnerPageScreen extends StatelessWidget {
-  final String planet;
+class InnerPageScreen extends StatefulWidget {
+  final PlanetDao planetDao;
 
-  InnerPageScreen({super.key, required this.planet});
+  const InnerPageScreen({super.key, required this.planetDao});
 
-  // Mapeo de planetas a sus assets
-  final Map<String, String> planetAssets = {
-    'mercury': 'assets/mercury.png',
-    'Venus': 'assets/venus.png',
-    'Earth': 'assets/earth.png',
-    'Mars': 'assets/mars.png',
-    'Jupiter': 'assets/jupiter.png',
-    'Saturn': 'assets/saturn.png',
-    'Uranus': 'assets/uranus.png',
-    'Neptune': 'assets/neptune.png',
-  };
+  @override
+  State<InnerPageScreen> createState() => _InnerPageScreenState();
+}
 
-  // Datos específicos de cada planeta
-  Map<String, String> getPlanetData(String planetName) {
-    final data = {
-      'mercury': {
-        'mass': '0.33',
-        'gravity': '3.7',
-        'day': '1408',
-        'escVelocity': '4.25',
-        'meanTemp': '167',
-        'distance': '57.9',
-      },
-      'Venus': {
-        'mass': '4.87',
-        'gravity': '8.87',
-        'day': '5832',
-        'escVelocity': '10.36',
-        'meanTemp': '464',
-        'distance': '108.2',
-      },
-      'Earth': {
-        'mass': '5.97',
-        'gravity': '9.8',
-        'day': '24',
-        'escVelocity': '11.2',
-        'meanTemp': '15',
-        'distance': '149.6',
-      },
-      'Mars': {
-        'mass': '0.642',
-        'gravity': '3.71',
-        'day': '25',
-        'escVelocity': '5.03',
-        'meanTemp': '-65',
-        'distance': '227.9',
-      },
-    };
+class _InnerPageScreenState extends State<InnerPageScreen> with SingleTickerProviderStateMixin {
+  final MoviesDatabase _database = MoviesDatabase();
+  late AnimationController _animationController;
 
-    return data[planetName] ?? data['Earth']!;
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 800),
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleFavorite() async {
+    widget.planetDao.isFavorite = widget.planetDao.isFavorite == 1 ? 0 : 1;
+    await _database.updatePlanet(widget.planetDao);
+    setState(() {});
+  }
+
+  Future<void> _deletePlanet() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Color(0xFF091422),
+        title: Text(
+          'Delete Planet',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          'Are you sure you want to delete ${widget.planetDao.namePlanet}? This action cannot be undone.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Cancel', style: TextStyle(color: Colors.cyan)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await _database.deletePlanet(widget.planetDao.idPlanet!);
+      Navigator.pop(context, true); // Volver a la pantalla anterior
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Planet deleted successfully'),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _editPlanet() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddPlanetScreen(planet: widget.planetDao),
+      ),
+    );
+    if (result == true) {
+      // Recargar datos del planeta
+      final updatedPlanets = await _database.getAllPlanets();
+      final updatedPlanet = updatedPlanets.firstWhere(
+        (p) => p.idPlanet == widget.planetDao.idPlanet,
+        orElse: () => widget.planetDao,
+      );
+      setState(() {
+        widget.planetDao.namePlanet = updatedPlanet.namePlanet;
+        widget.planetDao.imagePath = updatedPlanet.imagePath;
+        widget.planetDao.description = updatedPlanet.description;
+        widget.planetDao.mass = updatedPlanet.mass;
+        widget.planetDao.gravity = updatedPlanet.gravity;
+        widget.planetDao.dayLength = updatedPlanet.dayLength;
+        widget.planetDao.escapeVelocity = updatedPlanet.escapeVelocity;
+        widget.planetDao.meanTemp = updatedPlanet.meanTemp;
+        widget.planetDao.distanceFromSun = updatedPlanet.distanceFromSun;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final planetData = getPlanetData(planet);
-    final assetPath = planetAssets[planet] ?? 'assets/earth.png';
+    final imagePath = widget.planetDao.imagePath ?? 'assets/earth.png';
+    final isAsset = imagePath.startsWith('assets/');
 
     return Scaffold(
       body: Container(
@@ -136,7 +188,11 @@ class InnerPageScreen extends StatelessWidget {
                     ],
                   ),
                   image: DecorationImage(
-                    image: AssetImage(assetPath),
+                    image: isAsset 
+                        ? AssetImage(imagePath) as ImageProvider
+                        : (kIsWeb 
+                            ? NetworkImage(imagePath) 
+                            : AssetImage(imagePath)) as ImageProvider,
                     fit: BoxFit.cover,
                   ),
                   boxShadow: [
@@ -159,14 +215,30 @@ class InnerPageScreen extends StatelessWidget {
               right: 0,
               top: 270,
               child: Center(
-                child: Text(
-                  planet,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                    fontFamily: 'Roboto',
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.planetDao.namePlanet ?? 'Unknown',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        fontFamily: 'Roboto',
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    IconButton(
+                      icon: Icon(
+                        widget.planetDao.isFavorite == 1
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.red,
+                        size: 30,
+                      ),
+                      onPressed: _toggleFavorite,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -185,17 +257,17 @@ class InnerPageScreen extends StatelessWidget {
                         _buildStatItem(
                           Icons.scale,
                           'Mass\n(10²⁴ kg)',
-                          planetData['mass']!,
+                          widget.planetDao.mass ?? '0',
                         ),
                         _buildStatItem(
                           Icons.public,
                           'Gravity\n(m/s²)',
-                          planetData['gravity']!,
+                          widget.planetDao.gravity ?? '0',
                         ),
                         _buildStatItem(
                           Icons.access_time,
                           'Day\n(hours)',
-                          planetData['day']!,
+                          widget.planetDao.dayLength ?? '0',
                         ),
                       ],
                     ),
@@ -206,17 +278,17 @@ class InnerPageScreen extends StatelessWidget {
                         _buildStatItem(
                           Icons.speed,
                           'Esc. Velocity\n(km/s)',
-                          planetData['escVelocity']!,
+                          widget.planetDao.escapeVelocity ?? '0',
                         ),
                         _buildStatItem(
                           Icons.thermostat,
                           'Mean Temp\n(C)',
-                          planetData['meanTemp']!,
+                          widget.planetDao.meanTemp ?? '0',
                         ),
                         _buildStatItem(
                           Icons.wb_sunny,
                           'Distance from\nSun (10⁶ km)',
-                          planetData['distance']!,
+                          widget.planetDao.distanceFromSun ?? '0',
                         ),
                       ],
                     ),
@@ -225,73 +297,210 @@ class InnerPageScreen extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 114,
-              top: 550,
-              child: Opacity(
-                opacity: 0.8,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style:
-                      ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 40,
-                          vertical: 10,
+              left: 24,
+              right: 24,
+              top: 530,
+              child: FlipCard(
+                front: Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment(0.91, 0.09),
+                      end: Alignment(0.10, 0.93),
+                      colors: [
+                        Color(0xFF00E5E5),
+                        Color(0xFF72A4F1),
+                        Color(0xFFE860FF),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.cyan.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.white, size: 40),
+                      SizedBox(height: 8),
+                      Text(
+                        'Tap to see more info',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                      ),
+                    ],
+                  ),
+                ),
+                back: Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF091422).withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      width: 2,
+                      color: Colors.cyan,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.cyan.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'About ${widget.planetDao.namePlanet}',
+                        style: TextStyle(
+                          color: Colors.cyan,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        elevation: 0,
-                        foregroundColor: Colors.white,
-                        shadowColor: Colors.black,
-                        surfaceTintColor: Colors.transparent,
-                        minimumSize: Size(130, 40),
-                        overlayColor: Colors.white.withOpacity(0.2),
-                        splashFactory: InkRipple.splashFactory,
-                      ).copyWith(
-                        backgroundColor: WidgetStateProperty.resolveWith<Color>(
-                          (states) => Color(0xFF091422),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        widget.planetDao.description ?? 'No description available',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              top: 670,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Botón Editar
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: ElevatedButton.icon(
+                        onPressed: _editPlanet,
+                        icon: Icon(Icons.edit, size: 18),
+                        label: Text(
+                          'Edit',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF091422),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(color: Colors.cyan, width: 2),
                           ),
                         ),
                       ),
-                  child: Container(
-                    width: 130,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(0.91, 0.09),
-                        end: Alignment(0.10, 0.93),
-                        colors: [
-                          Color(0xFF00E5E5),
-                          Color(0xFF72A4F1),
-                          Color(0xFFE860FF),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black,
-                          blurRadius: 16,
-                          offset: Offset(0, -4),
-                        ),
-                      ],
                     ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Visit',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Roboto',
+                  ),
+                  // Botón Visit
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddReservationScreen(
+                                planetId: widget.planetDao.idPlanet!,
+                              ),
+                            ),
+                          );
+                          if (result == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Reservation created successfully!'),
+                                backgroundColor: Colors.cyan,
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment(0.91, 0.09),
+                              end: Alignment(0.10, 0.93),
+                              colors: [
+                                Color(0xFF00E5E5),
+                                Color(0xFF72A4F1),
+                                Color(0xFFE860FF),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Text(
+                            'Visit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                  // Botón Eliminar
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 8),
+                      child: ElevatedButton.icon(
+                        onPressed: _deletePlanet,
+                        icon: Icon(Icons.delete, size: 18),
+                        label: Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF091422),
+                          foregroundColor: Colors.red,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            side: BorderSide(color: Colors.red, width: 2),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Positioned(

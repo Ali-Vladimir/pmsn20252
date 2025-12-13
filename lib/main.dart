@@ -1,21 +1,24 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:pmsn20252/firebase_options.dart';
-import 'package:pmsn20252/models/character.dart';
-import 'package:pmsn20252/screens/login_screen.dart';
-import 'package:pmsn20252/screens/register_screen.dart';
 import 'package:pmsn20252/screens/home_screen.dart';
-import 'package:pmsn20252/screens/character_details.dart';
 import 'package:pmsn20252/screens/cosmic/home_screen_cosmic.dart';
 import 'package:pmsn20252/screens/cosmic/favorites_screen.dart';
 import 'package:pmsn20252/screens/cosmic/profile_screen.dart';
-import 'package:pmsn20252/screens/add_song_screen.dart';
+import 'package:pmsn20252/screens/cosmic/planets_list_screen.dart';
+import 'package:pmsn20252/screens/cosmic/reservations_calendar_screen.dart';
 import 'package:pmsn20252/utils/theme_app.dart';
 import 'package:pmsn20252/utils/value_listener.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Inicializar sqflite para web
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+  
   runApp(const MyApp());
 }
 
@@ -34,15 +37,11 @@ class MyApp extends StatelessWidget {
             '/home-cosmic': (context) => HomeScreenCosmic(),
             '/favorites': (context) => FavoritesScreen(),
             '/profile': (context) => ProfileScreen(),
-            '/register': (context) => const RegisterScreen(),
-            '/add-song': (context) => const AddSongScreen(),
-            '/character-details': (context) => CharacterDetailsScreen(
-              character:
-                  ModalRoute.of(context)!.settings.arguments as Character,
-            ),
+            '/planets': (context) => PlanetsListScreen(),
+            '/calendar': (context) => ReservationsCalendarScreen(),
           },
-          title: 'Fighter App',
-          home: LoginScreen(),
+          title: 'Cosmic Explorer',
+          home: const HomeScreen(),
         );
       },
     );
